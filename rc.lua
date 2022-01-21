@@ -457,7 +457,7 @@ globalkeys = mytable.join(
     awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 10") end,
               {description = "-10%", group = "hotkeys"}),
 
-    -- ALSA volume control
+    -- Volume control
     awful.key({}, "XF86AudioRaiseVolume",
         function ()
             if sound_system == "alsa" then
@@ -470,7 +470,7 @@ globalkeys = mytable.join(
                 gears.debug.dump(string.format("Sound system not found. sound_system = %s", sound_system))
             end
         end,
-        {description = "volume up", group = "hotkeys"}),
+        {description = "volume up", group = "audio"}),
     awful.key({}, "XF86AudioLowerVolume",
         function ()
             if sound_system == "alsa" then
@@ -483,7 +483,7 @@ globalkeys = mytable.join(
                 gears.debug.dump(string.format("Sound system not found. sound_system = %s", sound_system))
             end
         end,
-        {description = "volume down", group = "hotkeys"}),
+        {description = "volume down", group = "audio"}),
     awful.key({}, "XF86AudioMute",
         function ()
             if sound_system == "alsa" then
@@ -497,19 +497,21 @@ globalkeys = mytable.join(
             end
             beautiful.volume.update()
         end,
-        {description = "toggle mute", group = "hotkeys"}),
-    awful.key({ altkey, "Control" }, "m",
-        function ()
-            os.execute(string.format("amixer -q set %s 100%%", beautiful.volume.channel))
-            beautiful.volume.update()
-        end,
-        {description = "volume 100%", group = "hotkeys"}),
-    awful.key({ altkey, "Control" }, "0",
-        function ()
-            os.execute(string.format("amixer -q set %s 0%%", beautiful.volume.channel))
-            beautiful.volume.update()
-        end,
-        {description = "volume 0%", group = "hotkeys"}),
+        {description = "toggle mute", group = "audio"}),
+
+    -- Media controll
+    awful.key({}, "XF86AudioPlay",
+        function () os.execute("playerctl play-pause") end,
+        {description = "play/pause media", group = "media"}),
+    awful.key({}, "XF86AudioStop",
+        function () os.execute("playerctl stop") end,
+        {description = "stop media", group = "media"}),
+    awful.key({}, "XF86AudioNext",
+        function () os.execute("playerctl next") end,
+        {description = "next media", group = "media"}),
+    awful.key({}, "XF86AudioPrev",
+        function () os.execute("playerctl previous") end,
+        {description = "previous media", group = "media"}),
 
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
@@ -557,21 +559,18 @@ globalkeys = mytable.join(
     awful.key({ modkey }, "v", function () awful.spawn.with_shell("xsel -b | xsel") end,
               {description = "copy gtk to terminal", group = "hotkeys"}),
 
-    -- User programs
-    awful.key({ modkey }, "q", function () awful.spawn(browser) end,
-              {description = "run browser", group = "launcher"}),
-
     -- Default
     --[[ Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
     --]]
+
     -- dmenu
     awful.key({ modkey }, "r", function ()
             os.execute(string.format("dmenu_run -i -fn 'Monospace' -nb '%s' -nf '%s' -sb '%s' -sf '%s'",
             beautiful.bg_normal, beautiful.fg_normal, beautiful.bg_focus, beautiful.fg_focus))
         end,
-        {description = "show dmenu", group = "launcher"}),
+        {description = "open launcer (dmenu)", group = "launcher"}),
 
     -- alternatively use rofi, a dmenu-like application with more features
     -- check https://github.com/DaveDavenport/rofi for more details
