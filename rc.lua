@@ -460,19 +460,41 @@ globalkeys = mytable.join(
     -- ALSA volume control
     awful.key({}, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
-            beautiful.volume.update()
+            if sound_system == "alsa" then
+                os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
+                beautiful.volume.update()
+            elseif sound_system == "pulseaudio" then
+                os.execute(string.format("pactl set-sink-volume %d +5%%", pulseaudio_sink))
+                beautiful.volume.update()
+            else
+                gears.debug.dump(string.format("Sound system not found. sound_system = %s", sound_system))
+            end
         end,
         {description = "volume up", group = "hotkeys"}),
     awful.key({}, "XF86AudioLowerVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
-            beautiful.volume.update()
+            if sound_system == "alsa" then
+                os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
+                beautiful.volume.update()
+            elseif sound_system == "pulseaudio" then
+                os.execute(string.format("pactl set-sink-volume %d -5%%", pulseaudio_sink))
+                beautiful.volume.update()
+            else
+                gears.debug.dump(string.format("Sound system not found. sound_system = %s", sound_system))
+            end
         end,
         {description = "volume down", group = "hotkeys"}),
     awful.key({}, "XF86AudioMute",
         function ()
-            os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
+            if sound_system == "alsa" then
+                os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
+                beautiful.volume.update()
+            elseif sound_system == "pulseaudio" then
+                os.execute(string.format("pactl set-sink-mute %d toggle", pulseaudio_sink))
+                beautiful.volume.update()
+            else
+                gears.debug.dump(string.format("Sound system not found. sound_system = %s", sound_system))
+            end
             beautiful.volume.update()
         end,
         {description = "toggle mute", group = "hotkeys"}),
@@ -825,6 +847,8 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
+sound_system = "pulseaudio"
+pulseaudio_sink = 1
 beautiful.volume.channel = "PCM"
 
 -- Startup programs
