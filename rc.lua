@@ -94,10 +94,11 @@ local themes = {
     "powerarrow-dark", -- 7
     "rainbow",         -- 8
     "steamburn",       -- 9
-    "vertex"           -- 10
+    "vertex",          -- 10
+    "gruvbox"    -- 11
 }
 
-local chosen_theme = themes[5]
+local chosen_theme = themes[11]
 local modkey       = "Mod4"
 local altkey       = "Mod1"
 local vi_focus     = false -- vi-like client focus https://github.com/lcpz/awesome-copycats/issues/275
