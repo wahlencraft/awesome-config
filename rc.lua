@@ -105,16 +105,17 @@ local vi_focus     = false -- vi-like client focus https://github.com/lcpz/aweso
 local cycle_prev   = true  -- cycle with only the previously focused client or all https://github.com/lcpz/awesome-copycats/issues/274
 
 -- personal variables
-local browser           = "firefox"
-local editor            = os.getenv("EDITOR") or "vim"
-local editorgui         = "geany"
-local filemanager       = "pcmanfm"
-local system_monitor    = "gnome-system-monitor"
-local mailclient        = "geary"
-local mediaplayer       = "vlc"
-local scrlocker         = "slimlock"
-local terminal          = "st"
-local virtualmachine    = "virtualbox"
+local browser            = "firefox"
+local editor             = os.getenv("EDITOR") or "vim"
+local editorgui          = "geany"
+local filemanager        = "pcmanfm"
+local system_monitor     = "gnome-system-monitor"
+local mailclient         = "geary"
+local mediaplayer        = "vlc"
+local scrlocker          = "slimlock"
+local terminal           = "st"
+local virtualmachine     = "virtualbox"
+local useless_gap_memory = chosen_theme.useless_gap or 4
 
 awful.util.terminal = terminal
 awful.util.tagnames = { " PRI ", " SEC ", " WWW ", " SYS ", " DOC ", " CHAT ", " MUS ", " VID ", " BACK " }
@@ -306,61 +307,38 @@ globalkeys = mytable.join(
     awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end,
               {description = "view  previous nonempty", group = "tag"}),
 
-    -- Default client focus
-    awful.key({ altkey,           }, "j",
-        function ()
-            awful.client.focus.byidx( 1)
-        end,
-        {description = "focus next by index", group = "client"}
-    ),
-    awful.key({ altkey,           }, "k",
-        function ()
-            awful.client.focus.byidx(-1)
-        end,
-        {description = "focus previous by index", group = "client"}
-    ),
-
     -- By-direction client focus
     awful.key({ modkey }, "j",
         function()
             awful.client.focus.global_bydirection("down")
             if client.focus then client.focus:raise() end
         end,
-        {description = "focus down", group = "client"}),
+        {description = "focus client below", group = "focus"}),
     awful.key({ modkey }, "k",
         function()
             awful.client.focus.global_bydirection("up")
             if client.focus then client.focus:raise() end
         end,
-        {description = "focus up", group = "client"}),
+        {description = "focus above client", group = "focus"}),
     awful.key({ modkey }, "h",
         function()
             awful.client.focus.global_bydirection("left")
             if client.focus then client.focus:raise() end
         end,
-        {description = "focus left", group = "client"}),
+        {description = "focus left client", group = "focus"}),
     awful.key({ modkey }, "l",
         function()
             awful.client.focus.global_bydirection("right")
             if client.focus then client.focus:raise() end
         end,
-        {description = "focus right", group = "client"}),
+        {description = "focus right client", group = "focus"}),
 
-    -- Menu
-    awful.key({ modkey,           }, "w", function () awful.util.mymainmenu:show() end,
-              {description = "show main menu", group = "awesome"}),
-
-    -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
-              {description = "swap with next client by index", group = "client"}),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
-              {description = "swap with previous client by index", group = "client"}),
-    awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
-              {description = "focus the next screen", group = "screen"}),
-    awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
-              {description = "focus the previous screen", group = "screen"}),
+    awful.key({ modkey, "Control" }, "l", function () awful.screen.focus_relative( 1) end,
+              {description = "focus the next screen", group = "focus"}),
+    awful.key({ modkey, "Control" }, "h", function () awful.screen.focus_relative(-1) end,
+              {description = "focus the previous screen", group = "focus"}),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
-              {description = "jump to urgent client", group = "client"}),
+              {description = "jump to urgent client", group = "focus"}),
     awful.key({ modkey,           }, "Tab",
         function ()
             if cycle_prev then
@@ -372,7 +350,35 @@ globalkeys = mytable.join(
                 client.focus:raise()
             end
         end,
-        {description = "cycle with previous/go back", group = "client"}),
+        {description = "cycle with previous/go back", group = "focus"}),
+
+    -- Menu
+    awful.key({ modkey,           }, "w", function () awful.util.mymainmenu:show() end,
+              {description = "show main menu", group = "awesome"}),
+
+    -- Layout manipulation
+    awful.key({ modkey, "Shift"   }, "j",
+        function ()
+            awful.client.swap.bydirection("down")
+        end,
+        {description = "swap with client below", group = "layout manipulation"}),
+    awful.key({ modkey, "Shift"   }, "k",
+        function ()
+            awful.client.swap.bydirection("up")
+        end,
+        {description = "swap with above client", group = "layout manipulation"}),
+    awful.key({ modkey, "Shift"   }, "l",
+        function ()
+            awful.client.swap.bydirection("right")
+        end,
+        -- This should swap, but for some reason it just moves
+        {description = "swap with client to the right", group = "layout manipulation"}),
+    awful.key({ modkey, "Shift"   }, "h",
+        function ()
+            awful.client.swap.bydirection("left", client.focus, true)
+        end,
+        {description = "swap with client to the left", group = "layout manipulation"}),
+
 
     -- Show/hide wibox
     awful.key({ modkey }, "b", function ()
@@ -390,6 +396,19 @@ globalkeys = mytable.join(
               {description = "increment useless gaps", group = "tag"}),
     awful.key({ altkey, "Control" }, "-", function () lain.util.useless_gaps_resize(-1) end,
               {description = "decrement useless gaps", group = "tag"}),
+    awful.key({ altkey, "Control" }, "u",
+        function ()
+            local s = awful.screen.focused()
+            local tag = s.selected_tag
+            if tag.gap == 0 then
+                tag.gap = useless_gap_memory
+            else
+                useless_gap_memory = tag.gap
+                tag.gap = 0
+            end
+            awful.layout.arrange(s)
+        end,
+        {description = "Toggle useless gap", group = "layout"}),
 
     -- Dynamic tagging
     awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end,
@@ -419,14 +438,18 @@ globalkeys = mytable.join(
               {description = "increase master width factor", group = "layout"}),
     awful.key({ modkey, altkey    }, "h",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
+    awful.key({ modkey, "Shift"   }, "plus",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
+    awful.key({ modkey, "Shift"   }, "KP_Add",     function () awful.tag.incnmaster( 1, nil, true) end),
+    awful.key({ modkey, "Shift"   }, "minus",     function () awful.tag.incnmaster(-1, nil, true) end,
               {description = "decrease the number of master clients", group = "layout"}),
-    awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
+    awful.key({ modkey, "Shift"   }, "KP_Subtract",     function () awful.tag.incnmaster(-1, nil, true) end),
+    awful.key({ modkey, "Control" }, "plus",     function () awful.tag.incncol( 1, nil, true)    end,
               {description = "increase the number of columns", group = "layout"}),
-    awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
+    awful.key({ modkey, "Control" }, "KP_Add",     function () awful.tag.incncol( 1, nil, true)    end),
+    awful.key({ modkey, "Control" }, "minus",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"}),
+    awful.key({ modkey, "Control" }, "KP_Subtract",     function () awful.tag.incncol(-1, nil, true)    end),
     awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
               {description = "select next", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
