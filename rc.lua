@@ -393,9 +393,13 @@ globalkeys = mytable.join(
 
     -- On-the-fly useless gaps change
     awful.key({ altkey, "Control" }, "+", function () lain.util.useless_gaps_resize(1) end,
-              {description = "increment useless gaps", group = "tag"}),
+              {description = "increase useless gaps", group = "tag"}),
+    awful.key({ altkey, "Control" }, "KP_Add", function () lain.util.useless_gaps_resize(1) end),
+
     awful.key({ altkey, "Control" }, "-", function () lain.util.useless_gaps_resize(-1) end,
-              {description = "decrement useless gaps", group = "tag"}),
+              {description = "decrease useless gaps", group = "tag"}),
+    awful.key({ altkey, "Control" }, "KP_Subtract", function () lain.util.useless_gaps_resize(-1) end),
+
     awful.key({ altkey, "Control" }, "u",
         function ()
             local s = awful.screen.focused()
@@ -438,16 +442,16 @@ globalkeys = mytable.join(
               {description = "increase master width factor", group = "layout"}),
     awful.key({ modkey, altkey    }, "h",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "plus",     function () awful.tag.incnmaster( 1, nil, true) end,
+    awful.key({ modkey, "Shift"   }, "+",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "KP_Add",     function () awful.tag.incnmaster( 1, nil, true) end),
-    awful.key({ modkey, "Shift"   }, "minus",     function () awful.tag.incnmaster(-1, nil, true) end,
+    awful.key({ modkey, "Shift"   }, "-",     function () awful.tag.incnmaster(-1, nil, true) end,
               {description = "decrease the number of master clients", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "KP_Subtract",     function () awful.tag.incnmaster(-1, nil, true) end),
-    awful.key({ modkey, "Control" }, "plus",     function () awful.tag.incncol( 1, nil, true)    end,
+    awful.key({ modkey, "Control" }, "+",     function () awful.tag.incncol( 1, nil, true)    end,
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "KP_Add",     function () awful.tag.incncol( 1, nil, true)    end),
-    awful.key({ modkey, "Control" }, "minus",     function () awful.tag.incncol(-1, nil, true)    end,
+    awful.key({ modkey, "Control" }, "-",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "KP_Subtract",     function () awful.tag.incncol(-1, nil, true)    end),
     awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
