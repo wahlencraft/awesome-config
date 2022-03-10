@@ -10,6 +10,7 @@ local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
 local dpi   = require("beautiful.xresources").apply_dpi
+local liu_timeedit = require("liu-timeedit")
 
 local os = os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -257,6 +258,8 @@ theme.mpd = lain.widget.mpd({
     end
 })
 
+schedule = liu_timeedit()
+
 function theme.at_screen_connect(s)
     -- Quake application
     s.quake = lain.util.quake({ app = awful.util.terminal })
@@ -342,6 +345,7 @@ function theme.at_screen_connect(s)
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
+            schedule,
             wibox.widget.systray(),
             layout = wibox.layout.fixed.horizontal,
             s.mylayoutbox,
