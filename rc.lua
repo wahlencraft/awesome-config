@@ -541,6 +541,26 @@ globalkeys = mytable.join(
         function () os.execute("playerctl previous") end,
         {description = "previous media", group = "media"}),
 
+    -- Sound
+    awful.key({}, "XF86AudioMute",
+        function()
+            awful.spawn("amixer set Master toggle")
+        end,
+        {description="Toggle audio", group="media"}
+        ),
+    awful.key({}, "XF86AudioRaiseVolume",
+        function()
+            awful.spawn("amixer set Master 5%+")
+        end,
+        {description="Raise Volume", group="media"}
+        ),
+    awful.key({}, "XF86AudioLowerVolume",
+        function()
+            awful.spawn( "amixer set Master 5%-")
+        end,
+        {description="Lower volume", group="media"}
+        ),
+
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
         function ()
