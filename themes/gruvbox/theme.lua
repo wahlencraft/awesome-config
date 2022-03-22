@@ -162,18 +162,45 @@ theme.mail = lain.widget.imap({
 --]]
 
 -- CPU
+local cores = 4
+local usage_threshold = 10
 local cpuicon = wibox.widget.imagebox(theme.widget_cpu)
 local cpu = lain.widget.cpu({
     settings = function()
-        widget:set_markup(markup.fontfg(theme.font, "#e33a6e", cpu_now.usage .. "% "))
+        local max_usage = 0
+        local avg_usage = cpu_now[0].usage
+
+        -- Find max cpu usage
+        for i=1, cores do
+            local usage = cpu_now[i].usage
+            if usage > max_usage then max_usage = usage end
+        end
+
+        local message = "NaN"
+        local high_cores = 0
+        local sum_high_usage = 0
+        -- Find average of the high cores
+        -- Also count high cores
+        for i=1, cores do
+            local usage = cpu_now[i].usage
+            if math.abs(max_usage - usage) <= usage_threshold then
+                high_cores = high_cores + 1
+                sum_high_usage = sum_high_usage + usage
+            end
+        end
+        local avg_high_usage = math.floor(sum_high_usage/high_cores)
+        message = string.format("x%d %d", high_cores, avg_high_usage)
+
+        widget:set_markup(markup.fontfg(theme.font, "#e33a6e", message .. "% "))
     end
 })
 
 -- Coretemp
 local tempicon = wibox.widget.imagebox(theme.widget_temp)
 local temp = lain.widget.temp({
+    format = "%.1f°C ",
     settings = function()
-        widget:set_markup(markup.fontfg(theme.font, "#f1af5f", coretemp_now .. "°C "))
+        widget:set_markup(markup.fontfg(theme.font, "#f1af5f", coretemp_now))
     end
 })
 
@@ -208,6 +235,9 @@ local netdownicon = wibox.widget.imagebox(theme.widget_netdown)
 local netdowninfo = wibox.widget.textbox()
 local netupicon = wibox.widget.imagebox(theme.widget_netup)
 local netupinfo = lain.widget.net({
+    timeout = 1,
+    units = 1000000/8,
+    format = "%.3f",
     settings = function()
         --[[ uncomment if using the weather widget
         if iface ~= "network off" and
