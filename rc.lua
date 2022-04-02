@@ -120,6 +120,17 @@ local useless_gap_memory = chosen_theme.useless_gap or 4
 awful.util.terminal = terminal
 awful.util.tagnames = { " PRI ", " SEC ", " WWW ", " SYS ", " DOC ", " CHAT ", " MUS ", " VID ", " BACK " }
 --awful.util.tagnames = { "1", "2", "3", "4", "5" }
+
+-- What program to launch with the "open tag specific program" shortcut
+local default_applications = {
+    ["default"] = terminal,
+    [" WWW "] = browser,
+    [" SYS "] = system_monitor,
+    [" CHAT "] = "teams-for-linux",
+    [" MUS "] = "spotify",
+    [" VID "] = browser .. " --new-window 'youtube.com/feed/subscriptions'"
+}
+
 awful.layout.layouts = {
     awful.layout.suit.tile,
     awful.layout.suit.floating,
@@ -427,6 +438,13 @@ globalkeys = mytable.join(
               {description = "delete tag", group = "tag"}),
 
     -- Standard program
+    awful.key({ altkey, "Control" }, "space", function ()
+        local t = awful.screen.focused().selected_tag
+        gears.debug.dump(t.name)
+        gears.debug.dump(default_applications[t.name])
+        awful.spawn(default_applications[t.name] or default_applications["default"])
+        end,
+              {description = "open tag specific program", group = "launcher"}),
     awful.key({ altkey, "Control" }, "t", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ altkey, "Control" }, "b", function () awful.spawn(browser) end,
