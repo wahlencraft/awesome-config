@@ -95,7 +95,7 @@ local themes = {
     "rainbow",         -- 8
     "steamburn",       -- 9
     "vertex",          -- 10
-    "gruvbox"    -- 11
+    "my-theme"    -- 11
 }
 
 local chosen_theme = themes[11]
