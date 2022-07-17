@@ -245,6 +245,7 @@ local netupinfo = lain.widget.net({
     timeout = 1,
     units = 1000000/8,
     format = "%.3f",
+    notify = "off",
     settings = function()
         --[[ uncomment if using the weather widget
         if iface ~= "network off" and
@@ -253,9 +254,22 @@ local netupinfo = lain.widget.net({
             theme.weather.update()
         end
         --]]
+        local carriers = 0
+        for _, dev in pairs(net_now.devices) do
+            carriers = carriers + tonumber(dev.carrier)
+        end
 
-        widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " "))
-        netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " "))
+        if carriers > 0 then
+            netdownicon.image = theme.widget_netdown
+            netupicon.image = theme.widget_netup
+            widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " "))
+            netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " "))
+        else
+            netdownicon.image = nil
+            netupicon.image = nil
+            widget:set_markup(markup.fontfg(theme.font, "#e54c62", "No carrier "))
+            netdowninfo:set_markup("")
+        end
     end
 })
 
