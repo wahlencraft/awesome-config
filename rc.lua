@@ -503,7 +503,7 @@ globalkeys = mytable.join(
     awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 10") end,
               {description = "-10%", group = "hotkeys"}),
 
-    -- Volume control
+    -- Audio
     awful.key({}, "XF86AudioRaiseVolume",
         function ()
             if sound_system == "alsa" then
@@ -558,26 +558,6 @@ globalkeys = mytable.join(
     awful.key({}, "XF86AudioPrev",
         function () os.execute("playerctl previous") end,
         {description = "previous media", group = "media"}),
-
-    -- Sound
-    awful.key({}, "XF86AudioMute",
-        function()
-            awful.spawn("amixer set Master toggle")
-        end,
-        {description="Toggle audio", group="media"}
-        ),
-    awful.key({}, "XF86AudioRaiseVolume",
-        function()
-            awful.spawn("amixer set Master 5%+")
-        end,
-        {description="Raise Volume", group="media"}
-        ),
-    awful.key({}, "XF86AudioLowerVolume",
-        function()
-            awful.spawn( "amixer set Master 5%-")
-        end,
-        {description="Lower volume", group="media"}
-        ),
 
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
@@ -954,9 +934,9 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-sound_system = "pulseaudio"
+sound_system = "alsa"
 pulseaudio_sink = 1
-beautiful.volume.channel = "PCM"
+beautiful.volume.channel = "Master"
 
 -- Startup programs
 awful.spawn.with_shell("insync quit; insync start")
