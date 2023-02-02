@@ -109,7 +109,7 @@ local browser            = "firefox"
 local editor             = os.getenv("EDITOR") or "vim"
 local editorgui          = "geany"
 local filemanager        = "pcmanfm"
-local system_monitor     = "gnome-system-monitor"
+local system_monitor     = "GTK_THEME=Adwaita:dark gnome-system-monitor"
 local mailclient         = "geary"
 local mediaplayer        = "vlc"
 local scrlocker          = "slimlock"
@@ -442,14 +442,14 @@ globalkeys = mytable.join(
         local t = awful.screen.focused().selected_tag
         gears.debug.dump(t.name)
         gears.debug.dump(default_applications[t.name])
-        awful.spawn(default_applications[t.name] or default_applications["default"])
+        awful.spawn.with_shell(default_applications[t.name] or default_applications["default"])
         end,
               {description = "open tag specific program", group = "launcher"}),
     awful.key({ altkey, "Control" }, "t", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ altkey, "Control" }, "b", function () awful.spawn(browser) end,
               {description = "open a browser", group = "launcher"}),
-    awful.key({ "Control", "Shift" }, "Escape", function () awful.spawn(system_monitor) end,
+    awful.key({ "Control", "Shift" }, "Escape", function () awful.spawn.with_shell(system_monitor) end,
               {description = "open system monitor", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
