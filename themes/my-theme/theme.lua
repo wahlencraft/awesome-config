@@ -163,7 +163,6 @@ theme.mail = lain.widget.imap({
 --]]
 
 -- CPU
-local usage_threshold = 10
 local cpuicon = wibox.widget.imagebox(theme.widget_cpu)
 local cpu = lain.widget.cpu({
     settings = function()
@@ -185,11 +184,12 @@ local cpu = lain.widget.cpu({
         local message = "NaN"
         local high_cores = 0
         local sum_high_usage = 0
+        local usage_threshold = max_usage/2
         -- Find average of the high cores
         -- Also count high cores
         for n=1, N do
             local usage = cpu_now[n].usage
-            if math.abs(max_usage - usage) <= usage_threshold then
+            if usage >= usage_threshold then
                 high_cores = high_cores + 1
                 sum_high_usage = sum_high_usage + usage
             end
