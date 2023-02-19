@@ -168,8 +168,9 @@ local cpu = lain.widget.cpu({
     settings = function()
         local max_usage = 0
         local avg_usage = cpu_now[0].usage
+        local max_cpu_frequency = 0
 
-        -- Find max CPU usage and number of CPU cores
+        -- Find max CPU usage, number of CPU cores and max CPU frequency
         local N = 0
         for n, cpu in pairs(cpu_now) do
             -- cpu_now includes not just all cores but also a string key
@@ -178,12 +179,15 @@ local cpu = lain.widget.cpu({
                 N = N + 1
                 local usage = cpu.usage
                 if usage > max_usage then max_usage = usage end
+                local freq = cpu.frequency
+                if freq > max_cpu_frequency then max_cpu_frequency = freq end
             end
         end
 
         local message = "NaN"
         local high_cores = 0
         local sum_high_usage = 0
+        local sum_high_freq = 0
         local usage_threshold = max_usage/2
         -- Find average of the high cores
         -- Also count high cores
@@ -192,12 +196,15 @@ local cpu = lain.widget.cpu({
             if usage >= usage_threshold then
                 high_cores = high_cores + 1
                 sum_high_usage = sum_high_usage + usage
+                sum_high_freq = sum_high_freq + cpu_now[n].frequency
             end
         end
         local avg_high_usage = math.floor(sum_high_usage/high_cores)
         message = string.format("x%d %d", high_cores, avg_high_usage)
+        local avg_high_freq = sum_high_freq/high_cores
+        local freq_msg = string.format("@%.2f GHz", avg_high_freq / 1000)
 
-        widget:set_markup(markup.fontfg(theme.font, "#e33a6e", message .. "% "))
+        widget:set_markup(markup.fontfg(theme.font, "#e33a6e", message .. "% " .. freq_msg))
     end
 })
 
@@ -206,7 +213,7 @@ local tempicon = wibox.widget.imagebox(theme.widget_temp)
 local temp = lain.widget.temp({
     format = "%d°C ",
     timeout = 5,
-    tempfile = "/sys/devices/virtual/thermal/thermal_zone3/temp",
+    tempfile = "/sys/devices/virtual/thermal/thermal_zone1/temp",
     settings = function()
         widget:set_markup(markup.fontfg(theme.font, "#f1af5f", coretemp_now))
     end
